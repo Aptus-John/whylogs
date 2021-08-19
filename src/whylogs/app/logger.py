@@ -543,7 +543,6 @@ class Logger:
             self.log_segments(df)
 
     def log_segments(self, data):
-
         if self.segment_type == "keys":
             self.log_segments_keys(data)
         elif self.segment_type == "set":
@@ -551,7 +550,7 @@ class Logger:
         else:
             raise TypeError("segments type not supported")
 
-    def log_segments_keys(self, data):
+    def log_segments_keys(self, data, drop=True):
         try:
             grouped_data = data.groupby(self.segments)
         except KeyError as e:
@@ -562,13 +561,15 @@ class Logger:
         for each_segment in segments:
             try:
                 segment_df = grouped_data.get_group(each_segment)
+                if drop:
+                    segment_df.drop(each_segment)
                 segment_tags = [{"key": self.segments[i], "value": each_segment[i]} for i in range(len(self.segments))]
 
                 self.log_df_segment(segment_df, segment_tags)
             except KeyError:
                 continue
 
-    def log_fixed_segments(self, data):
+    def log_fixed_segments(self, data, drop=True):
         # we group each segment seperately since the segment tags are allowed
         # to overlap
         for segment_tag in self.segments:
@@ -584,6 +585,8 @@ class Logger:
             if seg not in grouped_data.groups:
                 continue
             segment_df = grouped_data.get_group(seg)
+            if drop:
+                segment_df = segment_df.drop(columns=segment_keys[0])
 
             self.log_df_segment(segment_df, segment_tag)
 
@@ -617,3 +620,4 @@ class Logger:
 
 def hash_segment(seg: List[Dict]) -> str:
     return hashlib.sha256(json.dumps(seg).encode("utf-8")).hexdigest()
+
