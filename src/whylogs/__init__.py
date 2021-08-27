@@ -2,6 +2,7 @@ from ._version import __version__
 from .app.config import SessionConfig, WriterConfig
 from .app.session import (
     get_or_create_session,
+    set_session,
     reset_default_session,
     start_whylabs_session,
 )
@@ -15,6 +16,7 @@ __all__ = [
     "WriterConfig",
     "enable_mlflow",
     "get_or_create_session",
+    "set_session",
     "start_whylabs_session",
     "reset_default_session",
     "__version__",
