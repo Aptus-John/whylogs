@@ -513,6 +513,23 @@ def get_session():
     return _session
 
 
+def set_session(sess: Session):
+    """
+    Set the global session with an already created session.
+
+    Arguments
+    ---------
+    sess: Session -> The Session object to set as the global session
+
+    Returns
+    -------
+    None
+    """
+    global _session
+    _session = sess
+    return
+
+
 def get_logger():
     """
     Retrieve the global session logger
