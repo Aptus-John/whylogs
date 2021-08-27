@@ -356,7 +356,8 @@ class Session:
         segments = _estimate_segments(df=df, target_field=target_field, max_segments=max_segments)
 
         if not dry_run:
-            self.metadata_writer.autosegmentation_write(name, segments)
+            if self.metadata_writer:
+                self.metadata_writer.autosegmentation_write(name, segments)
 
         return segments
 
@@ -409,10 +410,14 @@ class Session:
 _use_whylabs_client = False
 
 
-def session_from_config(config: SessionConfig) -> Session:
+def session_from_config(config: SessionConfig = None, config_path: Optional[str] = "") -> Session:
     """
-    Construct a whylogs session from a `SessionConfig`
+    Construct a whylogs session from a `SessionConfig` or from a config_path
     """
+
+    if config is None:
+        config = load_config(config_path)
+
     writers = list(map(lambda x: writer_from_config(x), config.writers))
     metadata_writer = None
     if config.metadata:

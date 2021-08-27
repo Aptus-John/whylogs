@@ -27,7 +27,7 @@ def test_no_log_rotation(tmpdir):
 def test_log_rotation_parsing():
     with freeze_time("2012-01-14 03:21:34", tz_offset=-4) as frozen_time:
         l = Logger(session_id="", dataset_name="testing")
-        now = int(datetime.datetime.utcnow().timestamp())
+        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
         l._set_rotation(with_rotation_time="s")
         assert l.interval == 1
         assert l.rotate_at == now + 1
@@ -59,6 +59,7 @@ def test_log_rotation_parsing():
             l._set_rotation(with_rotation_time="2")
         with pytest.raises(TypeError):
             l._set_rotation(with_rotation_time="s2")
+        l.close()
 
 
 def test_log_rotation_seconds(tmpdir):
@@ -82,6 +83,7 @@ def test_log_rotation_seconds(tmpdir):
                 frozen_time.tick(delta=datetime.timedelta(seconds=1))
                 df = util.testing.makeDataFrame()
                 logger.log_dataframe(df)
+                logger.close()
     output_files = []
     for root, subdirs, files in os.walk(output_path):
         output_files += files
@@ -110,6 +112,7 @@ def test_log_rotation_minutes(tmpdir):
                 frozen_time.tick(delta=datetime.timedelta(minutes=2))
                 df = util.testing.makeDataFrame()
                 logger.log_dataframe(df)
+                logger.close()
     output_files = []
     for root, subdirs, files in os.walk(output_path):
         output_files += files
